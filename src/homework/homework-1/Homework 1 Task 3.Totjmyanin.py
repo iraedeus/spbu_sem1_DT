@@ -48,7 +48,7 @@ def get_count_of_words(file_path):
     words_count = 0
     with open(file_path) as file:
         for line in file:
-            words_count += line.count(' ') + line.count('\n')
+            words_count += len(line.split())
     return words_count
 
 
@@ -60,15 +60,17 @@ def get_count_of_chars(file_path):
     return chars_count
 
 
-def wc_logic():
+def wc_logic(args, path):
+    output_nums = []
     if '-l' in args:  # Get count of lines
-        output_nums.append(('Count of lines: ', get_count_of_lines(file_input_path)))
+        output_nums.append(('Count of lines: ', get_count_of_lines(path)))
     if '-w' in args:  # Get count of words
-        output_nums.append(('Count of words: ', get_count_of_words(file_input_path)))
+        output_nums.append(('Count of words: ', get_count_of_words(path)))
     if '-c' in args:  # Get size of file
-        output_nums.append(('Size of file: ', os.path.getsize(file_input_path)))
+        output_nums.append(('Size of file: ', os.path.getsize(path)))
     if '-m' in args:  # Get count of chars
-        output_nums.append(('Count of chars: ', get_count_of_chars(file_input_path) - get_count_of_lines(file_input_path)))
+        output_nums.append(('Count of chars: ', get_count_of_chars(path) - get_count_of_lines(path)))
+    return output_nums
 
 
 def wc_output(output_arr):
@@ -77,28 +79,28 @@ def wc_output(output_arr):
     return None
 
 
-def head_logic():
+def head_logic(args, path):
     parameter = int(sys.argv[3])
     if '-n' in args:  # Print first {parameter} lines
-        with open(file_input_path) as file:
+        with open(path) as file:
             for i in range(parameter):
                 print(file.readline().replace('\n', '', 1))
-                if i >= get_count_of_lines(file_input_path):
+                if i >= get_count_of_lines(path):
                     break
     elif '-c' in args:  # Print first {parameter} bytes
-        with open(file_input_path) as file:
+        with open(path) as file:
             print(file.read(parameter))
     else:
         print(paint_text('You entered wrong argument!', 'red'))
 
 
-def tail_logic():
+def tail_logic(args, path):
     parameter = int(sys.argv[3])
     if '-n' in args:  # Print last {parameter} lines
-        file_content = get_text_of_file(file_input_path)
+        file_content = get_text_of_file(path)
         print(find_lines_tail(file_content, parameter))
     elif '-c' in args:  # Print last {parameter} bytes
-        file_content = get_text_of_file(file_input_path)
+        file_content = get_text_of_file(path)
         print(find_string_with_bytes_tail(file_content, parameter))
     else:
         print(paint_text('You entered wrong argument!', 'red'))
@@ -116,13 +118,11 @@ if __name__ == '__main__':
     file_input_path = find_file(sys.argv[-1], '/')
 
     if command == 'wc':
-        output_nums = []
-        wc_logic()
-        wc_output(output_nums)
+        wc_output(wc_logic(args, file_input_path))
         print(sys.argv[-1])
     elif command == 'head':
-        head_logic()
+        head_logic(args, file_input_path)
     elif command == 'tail':
-        tail_logic()
+        tail_logic(args, file_input_path)
     else:
         print(paint_text('You entered wrong command!', 'red'))
