@@ -16,25 +16,20 @@ def reading_file(path):
                 yield word
 
 
-def find_words_that_occur(path):
-    return set(i for i in reading_file(path))  # For example: ('Hello', 'world')
-
-
-def find_count_individual_word(word, path):
-    return list(reading_file(path)).count(word)  # If word == 'Hello' - 1, 'world' - 1, etc.
-
-
 def find_counts_each_word(path):
     counts_each_word = {}
-    for word in find_words_that_occur(path):
-        counts_each_word.update({word: find_count_individual_word(word, path)})
+    for word in reading_file(path):
+        if word in counts_each_word:
+            counts_each_word[word] += 1
+        else:
+            counts_each_word[word] = 1
     return sorted(counts_each_word.items(), key=lambda x:x[1])  # [('Hello', 1), ('world', 1)]
 
 
 def write_data_to_file(data, path):
     with open(path, "w") as file:
         for i in range(len(data)):
-            file.write(data[i][0] + ',' + str(data[i][1]) + '\n')
+            print(data[i][0] + ',' + str(data[i][1]), file=file)
     print("Writing data to the file was successful")
 
 
