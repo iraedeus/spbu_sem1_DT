@@ -9,11 +9,17 @@ def find_file_path(name, path):
     return None
 
 
-def get_first_three_values(path):
+def get_lines_from_file(path, start_line, end_line):
     values = []
     with open(path, "r") as file:
-        for i in range(3):
-            values.append(file.readline().replace('\n', ''))
+        for i in range(0, start_line):
+            file.readline()
+        if end_line is None:
+            for i in file:
+                values.append(i.rstrip('\n'))
+        else:
+            for i in range(start_line, end_line):
+                values.append(file.readline().rstrip('\n'))
     return values
 
 
@@ -24,41 +30,34 @@ def delete_fragment_dna(dna, start, end):
 
 
 def insert_fragment_dna(dna, start, fragment):
-    return dna[0:dna.find(start) + len(start)] + fragment + dna[dna.find(start) + len(start):]
+    dna_before_fragment = dna[0:dna.find(start) + len(start)]
+    dna_after_fragment = dna[dna.find(start) + len(start):]
+    return dna_before_fragment + fragment + dna_after_fragment
 
 
-def execute_the_command(dna, command):
-    if 'INSERT' in command:
-        start = command.replace('\n', '').split(' ')[1]
-        fragment = command.replace('\n', '').split(' ')[2]
-        return insert_fragment_dna(dna, start, fragment)
-    elif 'DELETE' in command:
-        start = command.replace('\n', '').split(' ')[1]
-        end = command.replace('\n', '').split(' ')[2]
-        return delete_fragment_dna(dna, start, end)
-    elif 'REPLACE' in command:
-        template = command.replace('\n', '').split(' ')[1]
-        fragment = command.replace('\n', '').split(' ')[2]
-        return dna.replace(template, fragment, 1)
+def execute_the_command(dna, raw_command):
+    command, arg1, arg2 = raw_command.split(" ")
+    if command == 'INSERT':
+        return insert_fragment_dna(dna, arg1, arg2)
+    elif command == 'DELETE':
+        return delete_fragment_dna(dna, arg1, arg2)
+    elif command == 'REPLACE':
+        return dna.replace(arg1, arg2, 1)
 
 
 if __name__ == '__main__':
     log_file_path = find_file_path(input('Enter your log file in format XXX.txt: '), '/')
     output_file_path = find_file_path(input('Enter you output file in format XXX.txt: '), '/')
 
-    dna = get_first_three_values(log_file_path)[1]
-    n = get_first_three_values(log_file_path)[2]
+    _, dna, n = get_lines_from_file(log_file_path, 0, 3)
 
     array_of_dna = []
 
     with open(log_file_path, "r") as file:
-        for i in range(3):
-            file.readline()
-        for i in range(int(n)):
-            current_command = file.readline().replace('\n', '')
-            array_of_dna.append(execute_the_command(dna, current_command))
+        for current_command in get_lines_from_file(log_file_path, 3, None):
             dna = execute_the_command(dna, current_command)
+            array_of_dna.append(dna)
 
     with open(output_file_path, "w") as file:
-        for i in range(int(n)):
-            file.write(array_of_dna[i] + '\n')
+        for dna in array_of_dna:
+            print(dna, file=file)
