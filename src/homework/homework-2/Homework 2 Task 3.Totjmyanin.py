@@ -11,15 +11,12 @@ def find_file_path(name, path):
 
 def get_lines_from_file(path, start_line, end_line):
     values = []
+    if end_line is None:
+        end_line = float("inf")
     with open(path, "r") as file:
-        for i in range(0, start_line):
-            file.readline()
-        if end_line is None:
-            for i in file:
-                values.append(i.rstrip('\n'))
-        else:
-            for i in range(start_line, end_line):
-                values.append(file.readline().rstrip('\n'))
+        for i, line in enumerate(file):
+            if start_line <= i < end_line:
+                values.append(line.rstrip('\n'))
     return values
 
 
