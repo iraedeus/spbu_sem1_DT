@@ -9,10 +9,10 @@ def greatest_common_divisor(num1, num2):  # Euclid's algorithm
         divider = remainder_of_division
 
 
-if __name__ == '__main__':
-    user_input = int(input('Enter n: '))
+if __name__ == "__main__":
+    user_input = int(input("Enter n: "))
 
     for denominator in range(2, user_input + 1):
         for numerator in range(1, denominator):
             if greatest_common_divisor(numerator, denominator) == 1:
-                print(str(numerator) + '/' + str(denominator))
+                print(str(numerator) + "/" + str(denominator))
