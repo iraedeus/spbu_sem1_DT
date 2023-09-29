@@ -11,6 +11,7 @@ def curry_explicit(function, arity):
 
         def curry(x):
             return get_args([*args, x])
+
         return curry
 
     return get_args([])
@@ -26,6 +27,7 @@ def uncurry_explicit(function, arity):
             for i in range(len(x)):
                 arguments.append(x[i])
             return get_args(arguments)
+
         return uncurry
 
     return get_args([])
