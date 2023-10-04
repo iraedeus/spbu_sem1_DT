@@ -17,7 +17,9 @@ def curry_explicit(function, arity):
 
         def curry(x):
             return get_args([*args, x])
+
         return curry
+
     return get_args([])
 
 
@@ -26,6 +28,7 @@ def uncurry_explicit(function, arity):
     Performs the reverse actions of the curry_explicit function:
     function(a)(b) --> function(a,b)
     """
+
     def get_args(args):
         if len(args) == arity:
             return user_function(*args)
