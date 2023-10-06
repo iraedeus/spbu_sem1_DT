@@ -21,12 +21,12 @@ def size(stack):
 def empty(stack):
     if stack.size == 0:
         return True
-    else:
-        return False
+    return False
 
 
 def top(stack):
-    return stack.head.value
+    if stack.head is not None:
+        return stack.head.value
 
 
 def push(stack, element_value):
@@ -35,10 +35,9 @@ def push(stack, element_value):
 
 
 def pop(stack):
-    stack.head = stack.head.next
-    stack.size -= 1
-    if empty(stack):
-        return None
+    if stack.head is not None:
+        stack.head = stack.head.next
+        stack.size -= 1
 
 
 def main():
@@ -49,7 +48,7 @@ def main():
 
     print("Pushing in stack finished")
 
-    for i in range(8):
+    for i in range(11):
         print(f"Current value in head: {top(stack)}")
         pop(stack)
 
