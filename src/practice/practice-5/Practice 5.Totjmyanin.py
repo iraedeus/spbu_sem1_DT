@@ -19,9 +19,7 @@ def size(stack):
 
 
 def empty(stack):
-    if stack.size == 0:
-        return True
-    return False
+    return stack.size == 0
 
 
 def top(stack):
