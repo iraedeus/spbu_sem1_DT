@@ -37,6 +37,8 @@ def push(stack, element_value):
 def pop(stack):
     stack.head = stack.head.next
     stack.size -= 1
+    if empty(stack):
+        return None
 
 
 def main():
