@@ -1,18 +1,25 @@
-def greatest_common_divisor(num1, num2):  # Euclid's algorithm
-    divisible = num1
-    divider = num2
-    while True:
-        remainder_of_division = divisible % divider
-        divisible = divider
-        if remainder_of_division == 0:
-            return divider
-        divider = remainder_of_division
+import math
+
+
+def find_fractions(n):
+    fractions = {}
+    for denominator in range(2, user_input + 1):
+        for numerator in range(1, denominator):
+            if math.gcd(numerator, denominator) == 1:
+                fractions[str(numerator) + "/" + str(denominator)] = (
+                    numerator / denominator
+                )
+    return fractions
+
+
+def print_fractions(sorted_dict):
+    for i in sorted_dict:
+        print(i[0])
 
 
 if __name__ == "__main__":
     user_input = int(input("Enter n: "))
+    fractions = find_fractions(user_input)
 
-    for denominator in range(2, user_input + 1):
-        for numerator in range(1, denominator):
-            if greatest_common_divisor(numerator, denominator) == 1:
-                print(str(numerator) + "/" + str(denominator))
+    sorted_fractions = sorted(fractions.items(), key=lambda x: x[1])
+    print_fractions(sorted_fractions)
