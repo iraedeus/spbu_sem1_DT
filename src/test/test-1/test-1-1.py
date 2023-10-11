@@ -11,7 +11,7 @@ def find_file(name, path):
 
 def find_file_output(name, path):
     if find_file(name, path) is None:
-        file = open(name, 'w+')
+        file = open(name, "w+")
     return find_file(name, path)
 
 
