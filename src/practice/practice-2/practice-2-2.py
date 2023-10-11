@@ -2,12 +2,11 @@ import random
 
 
 def computer_makes_number():
-    final_num = str(random.randint(0, 9))
-    while len(final_num) < 4:
-        current_digit = str(random.randint(0, 9))
-        if current_digit not in final_num:
-            final_num += current_digit
-    return final_num
+    while True:
+        final_num = random.sample("0123456789", 4)
+        if final_num[0] != "0":
+            break
+    return "".join(final_num)
 
 
 def print_rules():
@@ -37,9 +36,7 @@ def check_digits(computer_num, user_num):
             count_of_bulls += 1
         elif user_num[i] in computer_num:
             count_of_cows += 1
-    return paint_in_color(f"{count_of_bulls} bulls\n", "green") + paint_in_color(
-        f"{count_of_cows} cows", "yellow"
-    )
+    return count_of_bulls, count_of_cows
 
 
 def check_if_input_wrong(user_input):
@@ -47,9 +44,10 @@ def check_if_input_wrong(user_input):
         current_digit = user_input[i]
         if user_input.count(current_digit) > 1:
             return True
+    return False
 
 
-def game_process():
+def game_process(computer_num):
     while True:
         user_input = input(paint_in_color("Enter a number!: ", "white"))
         if check_if_input_wrong(user_input):
@@ -58,10 +56,13 @@ def game_process():
         if hidden_number == user_input:
             print("Congratulations! You've won!")
             break
-        print(check_digits(hidden_number, user_input))
+        bulls, cows = check_digits(hidden_number, user_input)
+        print(paint_in_color(f"{bulls} bulls", "green"))
+        print(paint_in_color(f"{cows} cows", "yellow"))
 
 
 if __name__ == "__main__":
     print_rules()
     hidden_number = computer_makes_number()
-    game_process()
+    print(hidden_number)
+    game_process(hidden_number)
