@@ -7,9 +7,7 @@ def curry_explicit(function, arity):
     function(a,b) --> function(a)(b)
     """
     if arity == 0:
-        return function()
-    global user_function
-    user_function = function
+        return function
 
     def get_args(args):
         if len(args) == arity:
@@ -18,6 +16,7 @@ def curry_explicit(function, arity):
         def curry(x):
             return get_args([*args, x])
 
+        curry.__name__ = function.__name__
         return curry
 
     return get_args([])
@@ -29,17 +28,17 @@ def uncurry_explicit(function, arity):
     function(a)(b) --> function(a,b)
     """
 
-    def get_args(args):
-        if len(args) == arity:
-            return user_function(*args)
+    def get_args(*args):
+        if arity != len(args):
+            raise Exception("Wrong arity")
 
-        def uncurry(*x):
-            arguments = [item for item in x]
-            return get_args(arguments)
+        nonlocal function
+        for arg in args:
+            function = function(arg)
+        return function
 
-        return uncurry
-
-    return get_args([])
+    get_args.__name__ = function.__name__
+    return get_args
 
 
 if __name__ == "__main__":
@@ -47,4 +46,5 @@ if __name__ == "__main__":
     input_user_arity = int(input("Enter your arity: "))
 
     curried_function = curry_explicit(input_user_function, input_user_arity)
+    uncurried_function = uncurry_explicit(curried_function, input_user_arity)
     print("Successful!")
