@@ -27,9 +27,12 @@ def uncurry_explicit(function, arity):
     Performs the reverse actions of the curry_explicit function:
     function(a)(b) --> function(a,b)
     """
+
     def get_args(*args):
         if arity != len(args):
-            raise ValueError("Wrong arity. The arity must be similar with count of arguments")
+            raise ValueError(
+                "Wrong arity. The arity must be similar with count of arguments"
+            )
 
         nonlocal function
         for arg in args:
