@@ -1,3 +1,6 @@
+import functools
+
+
 def curry_explicit(function, arity):
     """
     Turning a function from several parameters into a function from one parameter that returns a function from the other parameters:
@@ -15,8 +18,7 @@ def curry_explicit(function, arity):
         def curry(x):
             return get_args([*args, x])
 
-        curry.__name__ = function.__name__
-        curry.__doc__ = function.__doc__
+        functools.update_wrapper(curry, function)
         return curry
 
     return get_args([])
@@ -28,19 +30,16 @@ def uncurry_explicit(function, arity):
     function(a)(b) --> function(a,b)
     """
 
-    def get_args(*args):
+    def get_args(*args, user_function=function):
         if arity != len(args):
             raise ValueError(
                 "Wrong arity. The arity must be similar with count of arguments"
             )
-
-        nonlocal function
         for arg in args:
-            function = function(arg)
-        return function
+            user_function = user_function(arg)
+        return user_function
 
-    get_args.__name__ = function.__name__
-    get_args.__doc__ = function.__doc__
+    functools.update_wrapper(get_args, function)
     return get_args
 
 
@@ -50,4 +49,5 @@ if __name__ == "__main__":
 
     curried_function = curry_explicit(input_user_function, input_user_arity)
     uncurried_function = uncurry_explicit(curried_function, input_user_arity)
+
     print("Successful!")
