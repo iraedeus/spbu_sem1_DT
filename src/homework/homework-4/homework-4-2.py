@@ -24,7 +24,7 @@ def find_mantissa(number, k, bits):
     fractional_part = abs(number) - integer_part
 
     binary_integer_part = bin(integer_part).lstrip("0b")
-    mantissa_bits = bits - len(binary_integer_part) - k - 2
+    mantissa_bits = bits - len(binary_integer_part) - k
     binary_fractional_part = to_bin_fractional(fractional_part, mantissa_bits)
 
     return (binary_integer_part + binary_fractional_part)[1:]
