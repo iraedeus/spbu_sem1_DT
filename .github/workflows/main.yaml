@@ -3,6 +3,7 @@ name: Main
 on: [push, pull_request]
 
 jobs:
+
   main:
     runs-on: ubuntu-latest
     steps:
@@ -13,8 +14,11 @@ jobs:
           cache: "pip"
       - name: "installation"
         run: pip install black
-        run: pip install pytest
       - name: "black"
         run: black . --check --diff --color
-        name: "pytest"
-        run: python -m pytest tests
+      - name: "Installation"
+        run: pip install pytest
+      - name: "pytest"
+        run: python3 -m pytest tests
+
+
