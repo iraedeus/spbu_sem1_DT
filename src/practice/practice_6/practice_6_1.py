@@ -3,8 +3,8 @@ def solve_quadratic_equation(a, b, c):
     if discriminant == 0:
         return -b / (2 * a)
     elif discriminant > 0:
-        x1 = (-b - (discriminant ** 0.5)) / (2 * a)
-        x2 = (-b + (discriminant ** 0.5)) / (2 * a)
+        x1 = (-b - (discriminant**0.5)) / (2 * a)
+        x2 = (-b + (discriminant**0.5)) / (2 * a)
         return x1, x2
     else:
         raise ValueError("Discriminant must be greater or equal than 0")
