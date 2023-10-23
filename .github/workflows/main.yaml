@@ -13,11 +13,9 @@ jobs:
           python-version: 3.11.5
           cache: "pip"
       - name: "installation"
-        run: pip install black
+        run: pip install black pytest
       - name: "black"
         run: black . --check --diff --color
-      - name: "Installation"
-        run: pip install pytest
       - name: "pytest"
         run: python3 -m pytest tests
 
