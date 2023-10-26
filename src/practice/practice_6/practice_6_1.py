@@ -11,26 +11,17 @@ def solve_quadratic_equation(a, b, c):
 
 
 def solve_linear_equation(b, c):
-    if b == 0:
-        raise ValueError("Division by 0!")
-    else:
-        return (-c / b,)
+    return -c / b,
 
 
 def solve_equation(a, b, c):
     if a == b == c == 0:
         raise ValueError("x is any number")
+    elif a == b == 0:
+        raise ValueError("There are no solutions to the equation")
     elif a == 0:
-        try:
-            return solve_linear_equation(b, c)
-        except ValueError:
-            print("Division by 0!")
-            return ()
-    try:
-        return solve_quadratic_equation(a, b, c)
-    except ValueError:
-        print("Discriminant is less than 0!")
-        return ()
+        return solve_linear_equation(b, c)
+    return solve_quadratic_equation(a, b, c)
 
 
 def is_float_number(number):
@@ -49,7 +40,7 @@ def to_float_coeffs(user_input):
                 raise ValueError(
                     "You entered wrong coefficients: They must be float number"
                 )
-            return list(map(float, user_input))
+        return list(map(float, user_input))
     else:
         raise ValueError("You must enter 3 coefficients")
 
