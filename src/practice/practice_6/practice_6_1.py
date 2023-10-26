@@ -11,7 +11,7 @@ def solve_quadratic_equation(a, b, c):
 
 
 def solve_linear_equation(b, c):
-    return -c / b,
+    return (-c / b,)
 
 
 def solve_equation(a, b, c):
