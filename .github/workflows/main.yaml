@@ -18,5 +18,3 @@ jobs:
         run: black . --check --diff --color
       - name: "pytest"
         run: python3 -m pytest tests
-
-

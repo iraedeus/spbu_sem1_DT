@@ -20,10 +20,10 @@ solve_quadratic_arr = [
 ]
 
 solve_equation_arr = [
-    (1, -6, 9, (3,)),
-    (1, 6, 9, (-3,)),
+    (1, -6, 9, (3.0,)),
+    (1, 6, 9, (-3.0,)),
     (0, 5, 1, (-1 / 5,)),
-    (5, -8, 3, (1, 3 / 5)),
+    (5, -8, 3, (1.0, 3 / 5)),
 ]
 
 main_scenario_arr = [
@@ -31,7 +31,6 @@ main_scenario_arr = [
     ("2 7 -4", "(0.5, -4.0)\n", "(-4.0, 0.5)\n"),
     ("1 18 81", "(-9.0,)\n", ""),
     ("0 11 5", f"({str(-5/11)},)\n", ""),
-    ("0 0 0", "()\n", ""),
 ]
 
 
@@ -60,7 +59,7 @@ def test_solve_linear_equation(b, c, expected):
 
 @pytest.mark.parametrize("b,c", [(0, 6), (0, 700)])
 def test_linear_exceptions(b, c):
-    with pytest.raises(ZeroDivisionError):
+    with pytest.raises(ValueError):
         solve_linear_equation(b, c)
 
 
@@ -78,11 +77,12 @@ def test_quadratic_exceptions(a, b, c):
 
 @pytest.mark.parametrize("a,b,c, expected", solve_equation_arr)
 def test_solve_equations(a, b, c, expected):
-    if a == 0:
-        assert solve_equation(a, b, c) == expected
-    else:
-        actual = solve_equation(a, b, c)
-        assert set(actual) == set(expected)
+    assert set(solve_equation(a, b, c)) == set(expected)
+
+
+def test_solve_equations_exception():
+    with pytest.raises(ValueError):
+        solve_equation(0, 0, 0)
 
 
 @pytest.mark.parametrize("input_user, expected1, expected2", main_scenario_arr)
