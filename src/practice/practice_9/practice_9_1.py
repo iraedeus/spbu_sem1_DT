@@ -82,19 +82,39 @@ def remove_if_two_children(deleted_tree_cell: TreeNode[V]):
     value = deleted_tree_cell.value
 
     min_node = find_min_node(deleted_tree_cell.right)
-    tree = TreeMap(root=deleted_tree_cell)
-    remove(tree, min_node.key)
 
-    deleted_tree_cell = tree.root
+    remove_recursion(deleted_tree_cell, min_node.key)
+
     deleted_tree_cell.key = min_node.key
     deleted_tree_cell.value = min_node.value
 
     return deleted_tree_cell, value
 
 
+def remove_recursion(current_node: TreeNode[V], key: int):
+    if current_node.key < key:
+        new_right_child, value = remove_recursion(current_node.right, key)
+        current_node.right = new_right_child
+        return current_node, value
+    elif current_node.key > key:
+        new_left_child, value = remove_recursion(current_node.left, key)
+        current_node.left = new_left_child
+        return current_node, value
+
+    if current_node.left is None and current_node.right is None:
+        return None, current_node.value
+    elif current_node.left is None or current_node.right is None:
+        if current_node.left is None:
+            return current_node.right, current_node.value
+        else:
+            return current_node.left, current_node.value
+    else:
+        return remove_if_two_children(current_node)
+
+
 def remove(tree: TreeMap[V], key: int) -> V:
     if not has_key(tree, key):
-        raise ValueError("Tree doesn't have this key")
+        raise ValueError(f"Can't remove {key} key, because this key doesnt exist")
     if tree.size == 1:
         root = tree.root
 
@@ -102,48 +122,20 @@ def remove(tree: TreeMap[V], key: int) -> V:
         tree.size -= 1
         return root.value
 
-    def remove_recursion(current_node: TreeNode[V], key: int):
-        if current_node.key < key:
-            new_right_child, value = remove_recursion(current_node.right, key)
-            current_node.right = new_right_child
-            return current_node, value
-        elif current_node.key > key:
-            new_left_child, value = remove_recursion(current_node.left, key)
-            current_node.left = new_left_child
-            return current_node, value
-        else:
-            if current_node.left is None and current_node.right is None:
-                return None, current_node.value
-            elif current_node.left is None or current_node.right is None:
-                if current_node.left is None:
-                    return current_node.right, current_node.value
-                else:
-                    return current_node.left, current_node.value
-            else:
-                output = remove_if_two_children(current_node)
-                return output[0], output[1]
-
     tree.root, value = remove_recursion(tree.root, key)
     return value
 
 
 def get_tree_node(tree: TreeMap[V], key: int) -> TreeNode[V]:
-    if not has_key(tree, key):
-        raise ValueError("Tree doesn't have this key")
-
-    def recursion(tree_cell: TreeNode) -> TreeNode:
-        if key == tree_cell.key:
+    def recursion(tree_cell: TreeNode):
+        if tree_cell is None or key == tree_cell.key:
             return tree_cell
-
-        if key < tree_cell.key and tree_cell.left is not None:
+        elif key < tree_cell.key:
             return recursion(tree_cell.left)
-        elif key > tree_cell.key and tree_cell.right is not None:
+        elif key > tree_cell.key:
             return recursion(tree_cell.right)
 
-    output = recursion(tree.root)
-    if output is None:
-        raise ValueError("Tree doesn't have this key")
-    return output
+    return recursion(tree.root)
 
 
 def get_value(tree: TreeMap[V], key: int) -> V:
@@ -153,19 +145,8 @@ def get_value(tree: TreeMap[V], key: int) -> V:
 
 
 def has_key(tree: TreeMap[V], key: int) -> bool:
-    output = False
-
-    def recursion(tree_cell: TreeNode[V], key: int):
-        if key == tree_cell.key:
-            nonlocal output
-            output = True
-        if key < tree_cell.key and tree_cell.left is not None:
-            return recursion(tree_cell.left, key)
-        elif key > tree_cell.key and tree_cell.right is not None:
-            return recursion(tree_cell.right, key)
-
-    recursion(tree.root, key)
-    return output
+    node = get_tree_node(tree, key)
+    return node is not None
 
 
 def _postorder_comparator(node: TreeNode[V]):
@@ -196,9 +177,12 @@ def traverse(tree: TreeMap[V], order: str) -> list[V]:
 
     if order == "preorder":
         recursion(tree.root, _preorder_comparator)
-    if order == "inorder":
+    elif order == "inorder":
         recursion(tree.root, _inorder_comparator)
-    if order == "postorder":
+    elif order == "postorder":
         recursion(tree.root, _postorder_comparator)
-
+    else:
+        raise ValueError(
+            "Unknown order, order can be one of follow: postorder, inorder, preorder"
+        )
     return output
