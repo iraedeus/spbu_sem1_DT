@@ -27,7 +27,22 @@ def create_tree_map() -> TreeMap:
 
 
 def delete_tree_map(tree: TreeMap) -> None:
-    tree.root = None
+    root = tree.root
+
+    def delete_recursion(tree_cell: TreeNode):
+        left_child = tree_cell.left
+        right_child = tree_cell.right
+
+        if left_child is None and right_child is None:
+            del tree_cell
+        elif right_child is not None:
+            delete_recursion(tree_cell.right)
+            del tree_cell
+        elif left_child is not None:
+            delete_recursion(tree_cell.left)
+            del tree_cell
+
+    delete_recursion(root)
 
 
 def put(tree: TreeMap, key: int, value: V) -> None:
