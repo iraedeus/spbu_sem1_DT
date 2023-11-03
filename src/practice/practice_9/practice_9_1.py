@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Optional
 
 V = TypeVar("V")
 
@@ -8,14 +8,14 @@ V = TypeVar("V")
 class TreeNode(Generic[V]):
     key: int
     value: V
-    left: "TreeNode[V]" or None
-    right: "TreeNode[V]" or None
+    left: Optional["TreeNode[V]"] = None
+    right: Optional["TreeNode[V]"] = None
 
 
 @dataclass
 class TreeMap(Generic[V]):
-    root: TreeNode[V] | None
-    size: int
+    root: Optional["TreeNode[V]"] = None
+    size: int = 0
 
 
 def is_tree_map_empty(tree: TreeMap) -> bool:
