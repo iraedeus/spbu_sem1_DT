@@ -32,9 +32,9 @@ def test_put(keys, key, value, expected):
     [
         ([50, 30, 40, 70, 60, 80], 30, [[40, 50, 60, 70, 80], 30]),
         (
-            [50, 25, 75, 12, 30, 60, 6, 52, 70],
-            25,
-            [[6, 12, 30, 50, 52, 60, 70, 75], 25],
+            [5, 2, 7, 1, 3, 4, 7, 6, 9, 8, 10],
+            2,
+            [[2, 3, 4, 5, 6, 7, 8, 9, 10], 2],
         ),
         ([6], 6, [[], 6]),
         ([6, 7, 8], 6, [[7, 8], 6]),
@@ -125,3 +125,4 @@ def test_has_key(keys, key, expected):
 )
 def test_traverse(keys, expected, order):
     assert traverse(create_test_tree(keys), order) == expected
+

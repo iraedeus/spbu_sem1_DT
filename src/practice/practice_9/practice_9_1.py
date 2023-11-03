@@ -71,109 +71,61 @@ def put(tree: TreeMap, key: int, value: V) -> None:
         tree.size += 1
 
 
-def remove_if_two_child(deleted_tree_cell: TreeNode):
-    right_child = deleted_tree_cell.right
-    value = 0
-    key = 0
+def remove_if_two_children(deleted_tree_cell: TreeNode[V]):
+    value = deleted_tree_cell.value
 
-    def recursion(tree_cell, parent):
-        nonlocal value, key
+    new_value = 0
+    new_key = 0
 
-        if tree_cell.left is not None:
-            recursion(tree_cell.left, tree_cell)
+    def recursion(current_node: TreeNode[V], parent):
+        if current_node.left is None and current_node.right is None:
+            nonlocal new_key, new_value
+            new_key = current_node.key
+            new_value = current_node.value
+            parent.left = None
         else:
-            key = tree_cell.key
-            value = tree_cell.value
-            if parent.left == tree_cell:
-                parent.left = None
-            else:
-                parent.right = None
-
-    recursion(right_child, deleted_tree_cell)
-    deleted_tree_cell.key = key
+            recursion(current_node.left, current_node)
+    deleted_tree_cell.key = new_key
     deleted_tree_cell.value = value
+    recursion(deleted_tree_cell, None)
+    return deleted_tree_cell, value
 
 
-def remove_root(tree):
-    value = tree.root.value
-    right_child = tree.root.right
-    left_child = tree.root.left
-    if right_child is None and left_child is None:
+def remove(tree: TreeMap[V], key: int) -> V:
+    if not has_key(tree, key):
+        raise ValueError("Tree doesn't have this key")
+    root = tree.root
+    if tree.size == 1:
         tree.root = None
-    elif right_child is None and left_child is not None:
-        tree.root = left_child
-    elif right_child is not None and left_child is None:
-        tree.root = right_child
-    else:
-        remove_if_two_child(tree.root)
+        tree.size -= 1
+        return root.value
+
+    def remove_recursion(current_node: TreeNode[V], key: int):
+        if current_node.key < key:
+            new_right_child, value = remove_recursion(current_node.right, key)
+            current_node.right = new_right_child
+            return current_node, value
+        elif current_node.key > key:
+            new_left_child, value = remove_recursion(current_node.left, key)
+            current_node.left = new_left_child
+            return current_node, value
+        else:
+            if current_node.left is None and current_node.right is None:
+                return None, current_node.value
+            elif current_node.left is None or current_node.right is None:
+                if current_node.left is None:
+                    return current_node.right, current_node.value
+                else:
+                    return current_node.left, current_node.value
+            else:
+                output = remove_if_two_children(current_node)
+                return output[0], output[1]
+
+    tree.root, value = remove_recursion(tree.root, key)
     return value
 
 
-def remove_parent_left(tree_cell, parent):
-    value = tree_cell.value
-    left_child = tree_cell.left
-    right_child = tree_cell.right
-    if left_child is not None and right_child is None:
-        parent.left = left_child
-        return value
-    elif right_child is not None and left_child is None:
-        parent.left = right_child
-        return value
-    elif right_child is None and left_child is None:
-        parent.left = None
-        return value
-    else:
-        remove_if_two_child(tree_cell)
-        return value
-
-
-def remove_parent_right(tree_cell, parent):
-    value = tree_cell.value
-    left_child = tree_cell.left
-    right_child = tree_cell.right
-    if left_child is not None and right_child is None:
-        parent.right = left_child
-        return value
-    elif right_child is not None and left_child is None:
-        parent.right = right_child
-        return value
-    elif right_child is None and left_child is None:
-        parent.right = None
-        return value
-    else:
-        remove_if_two_child(tree_cell)
-        return value
-
-
-def remove(tree: TreeMap, key: int) -> V:
-    root = tree.root
-    if not has_key(tree, key):
-        raise ValueError("Tree doesn't have this key")
-
-    def remove_recursion(tree_cell: TreeNode, parent):
-        left_child = tree_cell.left
-        right_child = tree_cell.right
-
-        # Check if key is similar with key_cell.key
-        if key == tree_cell.key:
-            if parent is None:
-                return remove_root(tree)
-            if tree_cell == parent.left:
-                return remove_parent_left(tree_cell, parent)
-            else:
-                return remove_parent_right(tree_cell, parent)
-
-        # Check at which of the children we enter
-        if key < tree_cell.key and left_child is not None:
-            return remove_recursion(left_child, tree_cell)
-        elif key > tree_cell.key and right_child is not None:
-            return remove_recursion(right_child, tree_cell)
-
-    tree.size -= 1
-    return remove_recursion(root, None)
-
-
-def get_tree_node(tree: TreeMap, key: int) -> TreeNode:
+def get_tree_node(tree: TreeMap[V], key: int) -> TreeNode[V]:
     root = tree.root
 
     def recursion(tree_cell: TreeNode) -> TreeNode:
@@ -188,91 +140,47 @@ def get_tree_node(tree: TreeMap, key: int) -> TreeNode:
     return recursion(root)
 
 
-def get_value(tree: TreeMap, key: int) -> V:
+def get_value(tree: TreeMap[V], key: int) -> V:
     root = tree.root
     if not has_key(tree, key):
         raise ValueError("Tree doesn't have this key")
     return get_tree_node(tree, key).value
 
 
-def has_key(tree: TreeMap, key: int) -> bool:
+def has_key(tree: TreeMap[V], key: int) -> bool:
     root = tree.root
     return get_tree_node(tree, key) is not None
 
 
-def inorder_traverse(tree: TreeMap):
-    root = tree.root
-    output = []
-
-    def inorder_recursion(tree_cell: TreeNode):
-        if tree_cell.left is not None and tree_cell.right is not None:
-            inorder_recursion(tree_cell.left)
-            output.append(tree_cell.value)
-            inorder_recursion(tree_cell.right)
-        elif tree_cell.left is None and tree_cell.right is not None:
-            output.append(tree_cell.value)
-            inorder_recursion(tree_cell.right)
-        elif tree_cell.left is not None and tree_cell.right is None:
-            inorder_recursion(tree_cell.left)
-            output.append(tree_cell.value)
-        else:
-            output.append(tree_cell.value)
-
-    inorder_recursion(root)
-    return output
+def _postorder_comparator(node: TreeNode[V]):
+    return filter(None, (node.left, node.right, node))
 
 
-def preorder_traverse(tree: TreeMap):
-    root = tree.root
-    output = []
-
-    def preorder_recursion(tree_cell: TreeNode):
-        if tree_cell.left is not None and tree_cell.right is not None:
-            output.append(tree_cell.value)
-            preorder_recursion(tree_cell.left)
-            preorder_recursion(tree_cell.right)
-        elif tree_cell.left is None and tree_cell.right is not None:
-            output.append(tree_cell.value)
-            preorder_recursion(tree_cell.right)
-        elif tree_cell.left is not None and tree_cell.right is None:
-            output.append(tree_cell.value)
-            preorder_recursion(tree_cell.left)
-        else:
-            output.append(tree_cell.value)
-
-    preorder_recursion(root)
-    return output
+def _inorder_comparator(node: TreeNode[V]):
+    return filter(None, (node.left, node,  node.right))
 
 
-def postorder_traverse(tree: TreeMap):
-    root = tree.root
-    output = []
-
-    def postorder_recursion(tree_cell: TreeNode):
-        if tree_cell.left is not None and tree_cell.right is not None:
-            postorder_recursion(tree_cell.left)
-            postorder_recursion(tree_cell.right)
-            output.append(tree_cell.value)
-        elif tree_cell.left is None and tree_cell.right is not None:
-            postorder_recursion(tree_cell.right)
-            output.append(tree_cell.value)
-        elif tree_cell.left is not None and tree_cell.right is None:
-            postorder_recursion(tree_cell.left)
-            output.append(tree_cell.value)
-        else:
-            output.append(tree_cell.value)
-
-    postorder_recursion(root)
-    return output
-
+def _preorder_comparator(node: TreeNode[V]):
+    return filter(None, (node, node.left, node.right))
 
 def traverse(tree: TreeMap, order: str) -> list[V]:
     if tree.size == 0:
         return []
+
+    output = []
+
+    def recursion(current_node: TreeNode[V], order_func):
+        node_order = order_func(current_node)
+        for node in node_order:
+            if node is not current_node:
+                recursion(node, order_func)
+            else:
+                output.append(current_node.value)
+    if order == "preorder":
+        recursion(tree.root, _preorder_comparator)
     if order == "inorder":
-        return inorder_traverse(tree)
-    elif order == "preorder":
-        return preorder_traverse(tree)
-    elif order == "postorder":
-        return postorder_traverse(tree)
-    raise SyntaxError("Order must be one of follow: 'inorder', 'preorder', 'postorder'")
+        recursion(tree.root, _inorder_comparator)
+    if order == "postorder":
+        recursion(tree.root, _postorder_comparator)
+
+    return output
