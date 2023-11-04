@@ -1,17 +1,19 @@
-import collections
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class Node:
     value: int = None
-    next: any = None
+    previous: Optional["Node"] = None
+    next: Optional["Node"] = None
 
 
 @dataclass
 class Queue:
     size: int = 0
-    head: Node = None
+    head: Optional[Node] = None
+    tail: Optional[Node] = None
 
 
 def new_queue():
@@ -22,39 +24,44 @@ def size(queue):
     return queue.size
 
 
-def empty(stack):
-    return stack.size == 0
+def empty(queue):
+    return queue.size == 0
 
 
 def top(queue):
-    if queue.head is not None:
-        return queue.head.value
+    if empty(queue):
+        raise ValueError("Queue is empty")
+    return queue.head.value
 
 
 def tail(queue):
-    if queue.size > 1:
-        current_node = queue.head
-        for i in range(queue.size - 1):
-            current_node = current_node.next
-        return current_node.value
-    else:
-        return queue.head
+    if empty(queue):
+        raise ValueError("Queue is empty")
+    return queue.tail.value
 
 
 def push(queue, value):
-    if queue.head is None:
-        node = Node(value, None)
-        queue.head = node
+    if empty(queue):
+        head_tail = Node(value=value, previous=None, next=None)
+        queue.head = head_tail
+        queue.tail = head_tail
     else:
-        node = Node(value, queue.head)
-        queue.head = node
+        head = queue.head
+
+        new_head = Node(value=value, previous=None, next=head)
+        head.previous = new_head
+
+        queue.head = new_head
     queue.size += 1
 
 
 def pop(queue):
-    if queue is not None:
-        current_node = queue.head
-        for i in range(queue.size - 1):
-            current_node = current_node.next
-        current_node.next = None
+    if empty(queue):
+        raise ValueError("Queue is empty")
+    elif queue.size == 1:
+        queue.head = None
+        queue.tail = None
+    else:
+        queue.tail = queue.tail.previous
+
     queue.size -= 1

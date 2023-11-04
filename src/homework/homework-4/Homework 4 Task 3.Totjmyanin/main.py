@@ -7,8 +7,8 @@ if __name__ == "__main__":
         push(queue, i)
         print(f"Head in queue now: {top(queue)}")
 
-    print(" ")
+    print("")
 
-    for i in range(3):
+    for i in range(2):
         pop(queue)
         print(f"Tail in queue now: {tail(queue)}")
