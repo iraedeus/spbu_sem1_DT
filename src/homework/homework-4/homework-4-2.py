@@ -39,7 +39,7 @@ def find_true_order(number):
 
 def to_fp16(number):
     true_order = find_true_order(number)
-    shifted_order = true_order + 2**4 - 1
+    shifted_order = true_order + 2 ** 4 - 1
 
     mantissa = find_mantissa(number, 5, 16)
     return check_sign(number) + bin(shifted_order).lstrip("0b") + " " + mantissa
@@ -47,7 +47,7 @@ def to_fp16(number):
 
 def to_fp32(number):
     true_order = find_true_order(number)
-    shifted_order = true_order + 2**7 - 1
+    shifted_order = true_order + 2 ** 7 - 1
 
     mantissa = find_mantissa(number, 8, 32)
     return check_sign(number) + bin(shifted_order).lstrip("0b") + " " + mantissa
@@ -55,7 +55,7 @@ def to_fp32(number):
 
 def to_fp64(number):
     true_order = find_true_order(number)
-    shifted_order = true_order + 2**10 - 1
+    shifted_order = true_order + 2 ** 10 - 1
 
     mantissa = find_mantissa(number, 11, 64)
     return check_sign(number) + bin(shifted_order).lstrip("0b") + " " + mantissa
@@ -67,19 +67,12 @@ def to_exponential(number):
     else:
         output = "-"
 
-    number = abs(number)
-    p = 0
+    bin_integer_part = bin(floor(number)).lstrip("0b")
+    bin_fractional_part = to_bin_fractional(number - floor(number), 10)
+    p = len(bin_integer_part)
 
-    if number >= 1:
-        while number / 2 >= 1:
-            p += 1
-            number /= 2
-    else:
-        while -1 <= number <= 1:
-            p -= 1
-            number *= 2
-
-    return output + f"{str(number)}*2^{str(p)}"
+    output += "0," + bin_integer_part + bin_fractional_part + f"*2^{p}"
+    return output
 
 
 def output_to_user(choice, number):
