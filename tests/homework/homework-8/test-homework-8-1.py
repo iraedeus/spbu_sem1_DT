@@ -25,13 +25,20 @@ def test_to_utf16(char, expected):
 @pytest.mark.parametrize(
     "input_user, expected",
     [
-        ("Hi", "H    U+0048    00000000 01001000\ni    U+0069    00000000 01101001\n"),
+        (
+            "Hi",
+            "H    U+0048    00000000 01001000\ni    U+0069    00000000 01101001\n\n",
+        ),
         (
             "我爱一只猫",
-            "我    U+6211    01100010 00010001\n爱    U+7231    01110010 00110001\n一    U+4E00    01001110 00000000\n只    U+53EA    01010011 11101010\n猫    U+732B    01110011 00101011\n",
+            "我    U+6211    01100010 00010001\n爱    U+7231    01110010 00110001\n一    U+4E00    01001110 00000000\n只    U+53EA    01010011 11101010\n猫    U+732B    01110011 00101011\n\n",
         ),
     ],
 )
 def test_main(monkeypatch, input_user, expected):
     monkeypatch.setattr("builtins.input", lambda _: input_user)
-    assert main() == expected
+    fake_output = StringIO()
+    monkeypatch.setattr("sys.stdout", fake_output)
+    main()
+    output = fake_output.getvalue()
+    assert output == expected
