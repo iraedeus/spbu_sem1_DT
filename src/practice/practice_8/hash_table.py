@@ -1,46 +1,59 @@
 from dataclasses import dataclass
+from typing import Callable, Any
+
+DEFAULT_HASHTABLE_SIZE = 1024
+LOAD_FACTOR_THRESHOLD = 0.7
 
 
 @dataclass
 class HashTable:
-    items: list[list[tuple] | list[None]]
+    items: list[list[tuple] | None]
     keys: list
-    size: int = 1024
+    hash_fn: Callable[[Any], int]
+    size: int = DEFAULT_HASHTABLE_SIZE
 
 
-def create_hash_table(size) -> HashTable:
-    table = HashTable(items=[], keys=list(), size=size)
-    for i in range(table.size):
-        table.items.append([])
+def create_hash_table() -> HashTable:
+    table = HashTable(items=[], keys=list(), size=DEFAULT_HASHTABLE_SIZE, hash_fn=hash)
+    for _ in range(DEFAULT_HASHTABLE_SIZE):
+        empty_cell = []
+        table.items.append(empty_cell)
     return table
+
+
+def get_index(table: HashTable, key):
+    return table.hash_fn(key) % table.size
 
 
 def delete_hash_table(table: HashTable):
     for key in table.keys:
-        index = hash(key) % table.size
-        table.items[index] = list()
+        index = get_index(table, key)
+        table.items[index] = None
     del table
 
 
+def check_cell(cell, key):
+    for i in cell:
+        if i[0] == key:
+            return True
+    return False
+
+
 def put(table: HashTable, key, value):
-    def replace_value(cell, key, value):
+    def add_value(cell, key, value):
         for i in range(len(cell)):
             if key == cell[i][0]:
                 del cell[i]
                 break
         cell.append((key, value))
 
-    key_value_tuple = (key, value)
-    index = hash(key) % table.size
+    index = get_index(table, key)
     cell = table.items[index]
 
-    if has_key(table, key):
-        replace_value(cell, key, value)
-    else:
-        cell.append(key_value_tuple)
-
-    if key not in table.keys:
+    if not check_cell(cell, key):
         table.keys.append(key)
+
+    add_value(cell, key, value)
 
     if is_need_resize(table):
         resize(table)
@@ -56,18 +69,18 @@ def remove(table: HashTable, key):
 
         return value
 
-    def del_key(table, key):
+    index = get_index(table, key)
+    cell = table.items[index]
+
+    if not has_key(table, key):
+        raise ValueError(f"There is no value with this key {key}")
+    else:
+        value = remove_in_cell(cell, key)
+
+    if cell == []:
         for i in range(len(table.keys)):
             if table.keys[i] == key:
                 del table.keys[i]
-
-    index = hash(key) % table.size
-    cell = table.items[index]
-    if not has_key(table, key):
-        raise ValueError
-    else:
-        del_key(table, key)
-        return remove_in_cell(cell, key)
 
 
 def get(table: HashTable, key):
@@ -75,14 +88,12 @@ def get(table: HashTable, key):
         for item in cell:
             if key == item[0]:
                 return item[1]
-        raise ValueError
-
-    index = hash(key) % table.size
-
-    try:
-        return get_value_in_cell(table.items[index], key)
-    except ValueError:
         raise ValueError(f"There is no value with this key {key}")
+
+    index = get_index(table, key)
+    cell = table.items[index]
+
+    return get_value_in_cell(cell, key)
 
 
 def has_key(table: HashTable, key) -> bool:
@@ -92,7 +103,7 @@ def has_key(table: HashTable, key) -> bool:
                 return True
         return False
 
-    index = hash(key) % table.size
+    index = get_index(table, key)
     return is_key_in_cell(table.items[index], key)
 
 
@@ -104,13 +115,19 @@ def items(table: HashTable) -> list[tuple]:
     return output
 
 
+def load_factor(table):
+    return len(table.keys) / table.size
+
+
 def is_need_resize(table) -> bool:
-    return len(table.keys) / table.size > 0.7
+    return load_factor(table) > LOAD_FACTOR_THRESHOLD
 
 
 def resize(table: HashTable):
     new_size = table.size * 2
-    new_table = create_hash_table(new_size)
+    global DEFAULT_HASHTABLE_SIZE
+    DEFAULT_HASHTABLE_SIZE = new_size
+    new_table = create_hash_table()
 
     for key in table.keys:
         value = get(table, key)

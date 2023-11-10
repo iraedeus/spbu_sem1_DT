@@ -3,7 +3,7 @@ from src.practice.practice_8.hash_table import *
 
 
 def create_test_hash_table(keys_values):
-    table = create_hash_table(1024)
+    table = create_hash_table()
 
     for key, item in keys_values:
         put(table, key, item)
@@ -137,7 +137,7 @@ def test_has_key(keys_values, key, expected):
 
 @pytest.mark.parametrize("key", [(list())])
 def test_has_key_exception(key):
-    table = create_hash_table(4)
+    table = create_hash_table()
     with pytest.raises(TypeError):
         has_key(table, key)
 
