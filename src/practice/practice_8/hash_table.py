@@ -77,11 +77,6 @@ def remove(table: HashTable, key):
     else:
         value = remove_in_cell(cell, key)
 
-    if cell == []:
-        for i in range(len(table.keys)):
-            if table.keys[i] == key:
-                del table.keys[i]
-
 
 def get(table: HashTable, key):
     def get_value_in_cell(cell, key):
@@ -109,9 +104,10 @@ def has_key(table: HashTable, key) -> bool:
 
 def items(table: HashTable) -> list[tuple]:
     output = []
-    for key in table.keys:
-        output.append((key, get(table, key)))
-
+    for cell in table.items:
+        if cell != []:
+            for item in cell:
+                output.append(item)
     return output
 
 
