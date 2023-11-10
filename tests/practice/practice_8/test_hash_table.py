@@ -11,11 +11,6 @@ def create_test_hash_table(keys_values):
     return table
 
 
-@pytest.mark.parametrize("key, expected", [(100, True), (list(), False)])
-def test_is_hashable(key, expected):
-    assert is_hashable(key) == expected
-
-
 @pytest.mark.parametrize(
     "keys_values",
     [[["abc", 100], ["dbc", 200], ["obed", 1000]], (["zavtrak", 999], [8383, 11])],
@@ -91,7 +86,10 @@ def test_remove(keys_values, key, expected):
 
 
 @pytest.mark.parametrize(
-    "keys_values, key", [([[False, True], [True, False]], "python")]
+    "keys_values, key",
+    [
+        ([[False, True], [True, False]], "python"),
+    ],
 )
 def test_remove_exception(keys_values, key):
     table = create_test_hash_table(keys_values)
@@ -140,7 +138,7 @@ def test_has_key(keys_values, key, expected):
 @pytest.mark.parametrize("key", [(list())])
 def test_has_key_exception(key):
     table = create_hash_table(4)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         has_key(table, key)
 
 
