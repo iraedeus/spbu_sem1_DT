@@ -6,8 +6,16 @@ def encode(dna):
     pattern = "^[A-Za-z]*$"
     if not bool(re.match(pattern, dna)):
         raise ValueError("Your dna string must be only letters")
-    function_re = lambda m: f'{m[0][0]}{l if (l := len(m[0])) >= 1 else ""}'
-    output = re.sub(r"(\w)\1*", function_re, dna)
+    output = ""
+    counter = 1
+    for i in range(len(dna) - 1):
+        if dna[i] == dna[i + 1]:
+            counter += 1
+        else:
+            output += dna[i] + str(counter)
+            counter = 1
+    output += dna[-1] + str(counter)
+
     return output
 
 
