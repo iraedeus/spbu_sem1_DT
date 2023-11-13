@@ -33,9 +33,11 @@ def decode(dna):
             "You entered invalid dna string. Your string should not contain two letters in a row, as well as the last character should be a digit"
         )
 
-    function_re = lambda m: f"{m[0][0]*int(m[0][1:])}"
-    output = re.sub(r"([a-z])(\d*)", function_re, dna)
-    return output
+    chars = filter(lambda char: char in string.ascii_letters, dna)
+    counts = filter(lambda digit: digit in string.digits, dna)
+
+    output = list(map(lambda char, count: char * int(count), chars, counts))
+    return "".join(output)
 
 
 def main():
