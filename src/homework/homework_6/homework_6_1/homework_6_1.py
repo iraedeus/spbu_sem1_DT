@@ -92,7 +92,6 @@ def main():
     storage = create_tree_map()
     write_result(storage, file_path)
     write_storage(storage)
-    print(storage)
 
 
 if __name__ == "__main__":
