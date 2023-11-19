@@ -1,5 +1,6 @@
 import pytest
 from src.homework.homework_6.homework_6_1.homework_6_1 import *
+from io import StringIO
 
 
 def create_test_storage(sizes: list) -> TreeMap:
@@ -42,3 +43,15 @@ def test_select_if_exist(sizes, size, expected):
 def test_select_if_not_exist(sizes, size):
     storage = create_test_storage(sizes)
     assert select(storage, size) == "SORRY"
+
+
+def test_main():
+    main()
+    results_path = find_log("shop_results.txt", "/")
+    balance_path = find_log("shop_balance.txt", "/")
+    with open(OUTPUT_NAME, "r") as output, open(results_path, "r") as results:
+        for i in range(4096):
+            assert output.readline() == results.readline()
+    with open(STORAGE_REMAIN_NAME, "r") as remains, open(balance_path, "r") as balance:
+        for i in range(190):
+            assert remains.readline() == balance.readline()

@@ -2,6 +2,10 @@ from src.homework.homework_6.avl_tree import *
 import os
 
 
+OUTPUT_NAME = "output_logs.txt"
+STORAGE_REMAIN_NAME = "storage_remains.txt"
+
+
 def add(storage: TreeMap, size: int, count: int):
     node = get_tree_node(storage, size)
     if node is None:
@@ -43,7 +47,7 @@ def find_log(name, path):
     return None
 
 
-def write_result(storage, instruction, file):
+def write_result_command(storage, instruction, file):
     command = instruction[0]
     if command == "ADD":
         size = int(instruction[1])
@@ -58,6 +62,14 @@ def write_result(storage, instruction, file):
         file.write(str(chosen_size) + "\n")
 
 
+def write_result(storage, file_path):
+    with open(file_path, "r") as input, open("output_logs.txt", "w+") as output:
+        input.readline()
+        for line in input:
+            instruction = line.rstrip("\n").split(" ")
+            write_result_command(storage, instruction, output)
+
+
 def write_storage(storage):
     def recursion(storage_cell: TreeNode, file):
         size = str(storage_cell.key)
@@ -67,8 +79,9 @@ def write_storage(storage):
         elif storage_cell.left is not None:
             recursion(storage_cell.left, file)
             file.write(f"{size} {count}\n")
-            if storage_cell.right is not None:
-                recursion(storage_cell.right, file)
+
+        if storage_cell.right is not None:
+            recursion(storage_cell.right, file)
 
     with open("storage_remains.txt", "w+") as file:
         recursion(storage.root, file)
@@ -77,12 +90,9 @@ def write_storage(storage):
 def main():
     file_path = find_log("shop_logs.txt", "/")
     storage = create_tree_map()
-    with open(file_path, "r") as input, open("output_logs.txt", "w+") as output:
-        input.readline()
-        for line in input:
-            instruction = line.rstrip("\n").split(" ")
-            write_result(storage, instruction, output)
+    write_result(storage, file_path)
     write_storage(storage)
+    print(storage)
 
 
 if __name__ == "__main__":
