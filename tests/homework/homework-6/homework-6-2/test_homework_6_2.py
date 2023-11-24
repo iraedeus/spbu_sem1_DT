@@ -179,9 +179,11 @@ def test_list(selection, left_address, right_address, expected):
 
 def test_static(monkeypatch):
     directory = create_tree_map()
-    monkeypatch.setattr("builtins.input", lambda _: "streets_logs.txt output.txt")
+    monkeypatch.setattr("builtins.input", lambda _: "streets_logs.txt")
     static(directory)
 
-    with open("streets_results.txt", "r") as results, open("output.txt", "r") as output:
+    results = find_file("streets_results.txt", "/")
+
+    with open(results, "r") as results, open(OUTPUT_FILE, "r") as output:
         for line in results:
             assert line == output.readline()

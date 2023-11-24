@@ -1,4 +1,15 @@
 from src.homework.homework_6.avl_tree import *
+import os
+
+
+OUTPUT_FILE = "output.txt"
+
+
+def find_file(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
+    return None
 
 
 def get(directory: TreeMap, address: list):
@@ -164,11 +175,9 @@ def write_list_to_console(addresses):
 
 
 def static(directory):
-    file_input, file_output = input(
-        "Enter path to your input and output file: "
-    ).split()
+    file_input = find_file(input("Enter your input file: "), "/")
 
-    with open(file_input, "r") as log, open(file_output, "w+") as output:
+    with open(file_input, "r") as log, open(OUTPUT_FILE, "w+") as output:
         log.readline()
         for instruction in log:
             instruction = instruction.rstrip("\n").split(" ")
