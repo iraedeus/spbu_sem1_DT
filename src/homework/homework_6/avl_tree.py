@@ -1,6 +1,5 @@
-import math
 from dataclasses import dataclass
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic, Optional, Any
 
 V = TypeVar("V")
 
@@ -8,7 +7,7 @@ V = TypeVar("V")
 @dataclass
 class TreeNode(Generic[V]):
     height: int = 1
-    key: Optional[int] = None
+    key: Optional[Any] = None
     value: Optional[V] = None
     left: Optional["TreeNode[V]"] = None
     right: Optional["TreeNode[V]"] = None
@@ -59,7 +58,7 @@ def fix_height(tree_node: TreeNode[V]):
         tree_node.height = right_height + 1
 
 
-def put(tree: TreeMap[V], key: int, value: V) -> None:
+def put(tree: TreeMap[V], key, value: V) -> None:
     new_node = TreeNode(height=1, key=key, value=value, left=None, right=None)
 
     def recursion(parent: TreeNode[V] | None, tree_cell: TreeNode[V]):
@@ -102,7 +101,7 @@ def find_min_node(tree_cell: TreeNode[V]) -> TreeNode[V]:
     return find_recursion(tree_cell)
 
 
-def remove_recursion(current_node: TreeNode[V], key: int):
+def remove_recursion(current_node: TreeNode[V], key):
     if current_node.key < key:
         new_right_child, value = remove_recursion(current_node.right, key)
         current_node.right = new_right_child
@@ -136,7 +135,7 @@ def remove_if_two_children(deleted_tree_cell: TreeNode[V]):
     return deleted_tree_cell, value
 
 
-def remove(tree: TreeMap[V], key: int) -> V:
+def remove(tree: TreeMap[V], key) -> V:
     if not has_key(tree, key):
         raise ValueError(f"Can't remove {key} key, because this key doesnt exist")
     if tree.size == 1:
@@ -150,7 +149,7 @@ def remove(tree: TreeMap[V], key: int) -> V:
     return value
 
 
-def get_tree_node(tree: TreeMap[V], key: int) -> TreeNode[V]:
+def get_tree_node(tree: TreeMap[V], key) -> TreeNode[V]:
     def recursion(tree_cell: TreeNode):
         if tree_cell is None or key == tree_cell.key:
             return tree_cell
@@ -162,13 +161,13 @@ def get_tree_node(tree: TreeMap[V], key: int) -> TreeNode[V]:
     return recursion(tree.root)
 
 
-def get_value(tree: TreeMap[V], key: int) -> V:
+def get_value(tree: TreeMap[V], key) -> V:
     if not has_key(tree, key):
         raise ValueError("Tree doesn't have this key")
     return get_tree_node(tree, key).value
 
 
-def has_key(tree: TreeMap[V], key: int) -> bool:
+def has_key(tree: TreeMap[V], key) -> bool:
     node = get_tree_node(tree, key)
     return node is not None
 
@@ -185,7 +184,15 @@ def _preorder_comparator(node: TreeNode[V]):
     return filter(None, (node, node.left, node.right))
 
 
-def traverse(tree: TreeMap[V], order: str) -> list[V]:
+def traverse_keys(tuples: list[tuple]):
+    return [item[0] for item in tuples]
+
+
+def traverse_values(tuples: list[tuple]):
+    return [item[1] for item in tuples]
+
+
+def traverse(tree: TreeMap[V], order: str, field="default"):
     if tree.size == 0:
         return []
 
@@ -197,7 +204,7 @@ def traverse(tree: TreeMap[V], order: str) -> list[V]:
             if node is not current_node:
                 recursion(node, order_func)
             else:
-                output.append(current_node.value)
+                output.append((current_node.key, current_node.value))
 
     if order == "preorder":
         recursion(tree.root, _preorder_comparator)
@@ -209,13 +216,21 @@ def traverse(tree: TreeMap[V], order: str) -> list[V]:
         raise ValueError(
             "Unknown order, order can be one of follow: postorder, inorder, preorder"
         )
-    return output
+
+    if field == "keys":
+        return traverse_keys(output)
+    elif field == "values":
+        return traverse_values(output)
+    elif field == "default":
+        return output
+    else:
+        raise ValueError("Unknown field, field must be keys or values")
 
 
-def get_lower_bound(tree: TreeMap[V], key: int) -> int:
+def get_lower_bound(tree: TreeMap[V], key) -> int:
     output = get_maximum(tree) + 1
 
-    def recursion(current_node: TreeNode[V], key: int):
+    def recursion(current_node: TreeNode[V], key):
         nonlocal output
 
         if key < current_node.key and current_node.left is not None:
@@ -230,10 +245,10 @@ def get_lower_bound(tree: TreeMap[V], key: int) -> int:
     return output
 
 
-def get_higher_bound(tree: TreeMap[V], key: int) -> int:
+def get_higher_bound(tree: TreeMap[V], key) -> int:
     output = get_maximum(tree)
 
-    def recursion(current_node: TreeNode[V], key: int):
+    def recursion(current_node: TreeNode[V], key):
         nonlocal output
 
         if key < current_node.key and current_node.left is not None:
@@ -248,11 +263,11 @@ def get_higher_bound(tree: TreeMap[V], key: int) -> int:
     return output
 
 
-def get_maximum(tree: TreeMap[V]) -> int:
+def get_maximum(tree: TreeMap[V]):
     if tree.root is None:
         raise ValueError("Tree is empty")
 
-    def recursion(current_node: TreeNode[V]) -> int:
+    def recursion(current_node: TreeNode[V]):
         if current_node.right is not None:
             return recursion(current_node.right)
         else:
@@ -261,11 +276,11 @@ def get_maximum(tree: TreeMap[V]) -> int:
     return recursion(tree.root)
 
 
-def get_minimum(tree: TreeMap[V]) -> int:
+def get_minimum(tree: TreeMap[V]):
     if tree.root is None:
         raise ValueError("Tree is empty")
 
-    def recursion(current_node: TreeNode[V]) -> int:
+    def recursion(current_node: TreeNode[V]):
         if current_node.left is not None:
             return recursion(current_node.left)
         else:
@@ -321,3 +336,64 @@ def balance(tree_node: TreeNode[V]) -> TreeNode[V]:
         tree_node = left_small_rotate(tree_node)
 
     return tree_node
+
+
+def get_all(tree: TreeMap[V], left, right) -> list:
+    output = []
+
+    def recursion(tree_cell: TreeNode):
+        left_child = tree_cell.left
+        right_child = tree_cell.right
+
+        if left < tree_cell.key < right:
+            output.append(tree_cell.key)
+            if left_child is not None:
+                recursion(left_child)
+            if right_child is not None:
+                recursion(right_child)
+        elif tree_cell.key > right and left_child is not None:
+            recursion(left_child)
+        elif tree_cell.key < left and right_child is not None:
+            recursion(right_child)
+
+    recursion(tree.root)
+    return output
+
+
+def remove_keys(tree: TreeMap[V], left, right):
+    keys = get_all(tree, left, right)
+    tree.size -= len(keys)
+    for key in keys:
+        remove(tree, key)
+
+
+def split(tree: TreeMap[V], key) -> tuple[TreeMap[V], TreeMap[V]]:
+    first_tree = create_tree_map()
+    second_tree = create_tree_map()
+
+    nodes = traverse(tree, "inorder")
+
+    for node in nodes:
+        if node[0] < key:
+            put(first_tree, node[0], node[1])
+        else:
+            put(second_tree, node[0], node[1])
+
+    return first_tree, second_tree
+
+
+def merge(first_tree: TreeMap[V], second_tree: TreeMap[V]) -> TreeMap[V]:
+    tree = create_tree_map()
+
+    if first_tree.size <= second_tree.size:
+        first_tree_nodes = traverse(first_tree, "inorder")
+        for node in first_tree_nodes:
+            put(second_tree, node[0], node[1])
+        tree = second_tree
+    else:
+        second_tree_nodes = traverse(second_tree, "inorder")
+        for node in second_tree_nodes:
+            put(first_tree, node[0], node[1])
+        tree = first_tree
+
+    return tree
