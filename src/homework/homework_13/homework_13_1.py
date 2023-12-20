@@ -1,21 +1,12 @@
 from src.practice.practice_13.practice_13_1 import *
 
 
-def check_if_abb(string: str) -> bool:
-    functions = [lambda x: x == "a", lambda y: y == "b"]
-    table = [[1, 0], [1, 2], [1, 3], [1, 0]]
-    states = [0, 1, 2, 3]
-    fsm = create_fs_machine(table, states, functions, 0, [3])
-
-    return validate_string(fsm, string)
-
-
-def check_if_number(string: str) -> bool:
-    functions = [
-        lambda x: x.isdigit(),
-        lambda x: x == ".",
-        lambda x: x == "E",
-        lambda x: x in "+-",
+def create_fsm_number():
+    strings = [
+        "0123456789",
+        ".",
+        "E",
+        "+-",
     ]
     table = [
         [1, -1, -1, -1],
@@ -26,25 +17,41 @@ def check_if_number(string: str) -> bool:
         [6, -1, -1, -1],
         [6, -1, -1, -1],
     ]
-
     states = [0, 1, 2, 3, 4, 5, 6]
-
-    fsm = create_fs_machine(table, states, functions, 0, [1, 3, 6])
-
-    return validate_string(fsm, string)
+    fsm = create_fs_machine(table, states, strings, 0, [1, 3, 6])
+    return fsm
 
 
-def main():
-    input_string = input("Enter your string: ")
+def create_fsm_abb():
+    strings = ["a", "b"]
+    table = [[1, 0], [1, 2], [1, 3], [1, 0]]
+    states = [0, 1, 2, 3]
+    fsm = create_fs_machine(table, states, strings, 0, [3])
+    return fsm
 
-    if check_if_number(input_string):
+
+def print_if_abb(fsm: FSMachine, string: str):
+    if validate_string(fsm, string):
+        print("Your string is word of a regular expression: (a|b)+abb")
+
+
+def print_if_number(fsm: FSMachine, string: str):
+    if validate_string(fsm, string):
         print(
             "Your string is word of a regular expression: digit+(.digit+)?(E(+|-)?digit+)?"
         )
-    elif check_if_abb(input_string):
-        print("Your string is word of a regular expression: (a|b)+abb")
-    else:
-        print("Your string does not belong to either of the two regular expressions")
+
+
+def main():
+    fsm_number = create_fsm_number()
+    fsm_abb = create_fsm_abb()
+    print("If you want exit, enter 'Exit'")
+    while True:
+        input_string = input("Enter your string: ")
+        if input_string == "Exit":
+            break
+        print_if_number(fsm_number, input_string)
+        print_if_abb(fsm_abb, input_string)
 
 
 if __name__ == "__main__":

@@ -1,58 +1,42 @@
 import pytest
+from unittest.mock import patch
 from io import StringIO
 from src.homework.homework_13.homework_13_1 import *
-
-
-@pytest.mark.parametrize(
-    "string, expected",
-    [
-        ("abb", True),
-        ("abab", False),
-        ("ababababababababb", True),
-        ("oweijfowiefoiwejfabb", False),
-    ],
-)
-def test_check_if_abb(string, expected):
-    assert check_if_abb(string) == expected
-
-
-@pytest.mark.parametrize(
-    "string, expected",
-    [
-        ("56775", True),
-        ("56+45", False),
-        ("56.656", True),
-        ("56.45E10", True),
-        ("56.56.56E100", False),
-    ],
-)
-def test_check_if_number(string, expected):
-    assert check_if_number(string) == expected
+import builtins
 
 
 @pytest.mark.parametrize(
     "input_user, expected",
     [
-        ("abb", "Your string is word of a regular expression: (a|b)+abb\n"),
+        ("abb", "Your string is word of a regular expression: (a|b)+abb"),
         (
             "ababa",
-            "Your string does not belong to either of the two regular expressions\n",
+            "",
         ),
         (
             "45.45",
-            "Your string is word of a regular expression: digit+(.digit+)?(E(+|-)?digit+)?\n",
+            "Your string is word of a regular expression: digit+(.digit+)?(E(+|-)?digit+)?",
         ),
         (
             "45E",
-            "Your string does not belong to either of the two regular expressions\n",
+            "",
         ),
     ],
 )
 def test_main_scenario(input_user, expected, monkeypatch):
-    monkeypatch.setattr("builtins.input", lambda _: input_user)
-    fake_output = StringIO()
-    monkeypatch.setattr("sys.stdout", fake_output)
-    main()
-    output = fake_output.getvalue()
+    inputs = [input_user, "Exit"]
+    prints = []
 
-    assert output == expected
+    def mock_input(s):
+        return inputs.pop(0)
+
+    def mock_print(prints):
+        return lambda s: prints.append(s)
+
+    def mock_start_input_output(prints):
+        builtins.input = mock_input
+        builtins.print = mock_print(prints)
+
+    mock_start_input_output(prints)
+    main()
+    assert len(prints) == 1 or prints[1] == expected

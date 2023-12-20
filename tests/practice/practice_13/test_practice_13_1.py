@@ -8,7 +8,7 @@ from src.practice.practice_13.practice_13_1 import *
         (
             [[1, 0], [1, 2], [1, 3], [1, 0]],
             [0, 1, 2, 3],
-            [lambda x: x == "a", lambda y: y == "b"],
+            ["a", "b"],
             0,
             [3],
             "ababb",
@@ -17,7 +17,7 @@ from src.practice.practice_13.practice_13_1 import *
         (
             [[1, 0], [1, 2], [1, 3], [1, 0]],
             [0, 1, 2, 3],
-            [lambda x: x == "a", lambda y: y == "b"],
+            ["a", "b"],
             0,
             [3],
             "abab",
@@ -26,7 +26,7 @@ from src.practice.practice_13.practice_13_1 import *
         (
             [[1, 0], [1, 2], [1, 3], [1, 0]],
             [0, 1, 2, 3],
-            [lambda x: x == "a", lambda y: y == "b"],
+            ["a", "b"],
             0,
             [3],
             "cacabb",

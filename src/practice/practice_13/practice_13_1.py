@@ -4,9 +4,9 @@ from typing import Callable
 
 @dataclass
 class Table:
-    rows: list
-    columns: list
-    table: list[list]
+    rows: list[str]
+    columns: list[int]
+    table: list[list[int]]
 
 
 @dataclass
@@ -24,25 +24,18 @@ def create_fs_machine(
     final_states: list,
 ) -> FSMachine:
     table = Table(table=table, columns=functions, rows=states)
-
-    fsm = FSMachine(table=table)
-    fsm.current_state = start_state
-    fsm.final_states = final_states
-
+    fsm = FSMachine(table=table, current_state=start_state, final_states=final_states)
     return fsm
 
 
 def validate_string(fsm: FSMachine, string: str) -> bool:
     table = fsm.table
     for char in string:
-        have_function = False
         for i in range(len(table.columns)):
-            if table.columns[i](char) and table.table[fsm.current_state][i] != -1:
+            if char in table.columns[i] and table.table[fsm.current_state][i] != -1:
                 fsm.current_state = table.table[fsm.current_state][i]
-                have_function = True
                 break
-
-        if not have_function:
+        else:
             return False
 
     return fsm.current_state in fsm.final_states
