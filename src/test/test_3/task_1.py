@@ -4,14 +4,6 @@ BLOCK = " █"
 SPACE = "  "
 
 
-def is_int(num):
-    try:
-        int(num)
-    except:
-        return False
-    return True
-
-
 def create_list(size):
     if not (3 <= size <= 30):
         raise ValueError("Your size must be greater than 2 and less or equal than 30")

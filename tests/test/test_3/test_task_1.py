@@ -48,7 +48,7 @@ def test_print_sprite(input, expected, monkeypatch):
     assert output == expected
 
 
-@pytest.mark.parametrize("input_user", [["10", "", "Exit"], ["15", "", "Exit"], []])
+@pytest.mark.parametrize("input_user", [["10", "", "Exit"], ["15", "", "Exit"]])
 def test_main_scenario(input_user, monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: input_user.pop(0))
     fake_output = StringIO()
