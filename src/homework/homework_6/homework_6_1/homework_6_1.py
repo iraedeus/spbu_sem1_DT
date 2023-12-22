@@ -2,10 +2,6 @@ from src.homework.homework_6.avl_tree import *
 import os
 
 
-OUTPUT_NAME = "output_logs.txt"
-STORAGE_REMAIN_NAME = "storage_remains.txt"
-
-
 def add(storage: TreeMap, size: int, count: int):
     node = get_tree_node(storage, size)
     if node is None:

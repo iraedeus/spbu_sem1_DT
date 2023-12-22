@@ -49,10 +49,12 @@ def test_main():
     results_path = find_log("shop_results.txt", "/")
     balance_path = find_log("shop_balance.txt", "/")
 
-    with open(OUTPUT_NAME, "r") as output, open(results_path, "r") as results:
+    with open("output_logs.txt", "r") as output, open(results_path, "r") as results:
         for line in output:
             assert line == results.readline()
 
-    with open(STORAGE_REMAIN_NAME, "r") as remains, open(balance_path, "r") as balance:
+    with open("storage_remains.txt", "r") as remains, open(
+        balance_path, "r"
+    ) as balance:
         for line in remains:
             assert line == balance.readline()

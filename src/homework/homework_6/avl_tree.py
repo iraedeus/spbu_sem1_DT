@@ -7,9 +7,9 @@ V = TypeVar("V")
 
 @dataclass
 class TreeNode(Generic[V]):
+    key: Optional[int]
+    value: Optional[V]
     height: int = 1
-    key: Optional[int] = None
-    value: Optional[V] = None
     left: Optional["TreeNode[V]"] = None
     right: Optional["TreeNode[V]"] = None
 
@@ -50,56 +50,39 @@ def balance_factor(tree_node: TreeNode[V]) -> int:
 
 
 def fix_height(tree_node: TreeNode[V]):
-    left_height = get_height(tree_node.left)
-    right_height = get_height(tree_node.right)
+    if tree_node is not None:
+        left_height = get_height(tree_node.left)
+        right_height = get_height(tree_node.right)
 
-    if left_height > right_height:
-        tree_node.height = left_height + 1
-    else:
-        tree_node.height = right_height + 1
+        if left_height > right_height:
+            tree_node.height = left_height + 1
+        else:
+            tree_node.height = right_height + 1
 
 
 def put(tree: TreeMap[V], key: int, value: V) -> None:
     new_node = TreeNode(height=1, key=key, value=value, left=None, right=None)
 
-    def recursion(parent: TreeNode[V] | None, tree_cell: TreeNode[V]):
+    def recursion(tree_cell: TreeNode[V]):
+        if tree_cell is None:
+            return new_node
         if key < tree_cell.key:
-            if tree_cell.left is None:
-                tree_cell.left = new_node
-            else:
-                recursion(tree_cell, tree_cell.left)
+            tree_cell.left = recursion(tree_cell.left)
+            tree_cell = balance(tree_cell)
+            return tree_cell
         elif key > tree_cell.key:
-            if tree_cell.right is None:
-                tree_cell.right = new_node
-            else:
-                recursion(tree_cell, tree_cell.right)
+            tree_cell.right = recursion(tree_cell.right)
+            tree_cell = balance(tree_cell)
+            return tree_cell
         else:
             tree_cell.value = value
-
-        if tree_cell == tree.root:
-            tree.root = balance(tree_cell)
-        else:
-            if parent.left == tree_cell:
-                parent.left = balance(tree_cell)
-            else:
-                parent.right = balance(tree_cell)
+            return tree_cell
 
     if is_tree_map_empty(tree):
         tree.root = new_node
     else:
-        root = tree.root
-        recursion(None, root)
+        tree.root = recursion(tree.root)
     tree.size += 1
-
-
-def find_min_node(tree_cell: TreeNode[V]) -> TreeNode[V]:
-    def find_recursion(current_node: TreeNode[V]):
-        if current_node.left is None:
-            return current_node
-        else:
-            return find_recursion(current_node.left)
-
-    return find_recursion(tree_cell)
 
 
 def remove_recursion(current_node: TreeNode[V], key: int):
@@ -124,6 +107,12 @@ def remove_recursion(current_node: TreeNode[V], key: int):
 
 
 def remove_if_two_children(deleted_tree_cell: TreeNode[V]):
+    def find_min_node(tree_cell: TreeNode[V]) -> TreeNode[V]:
+        current_node = tree_cell
+        while current_node.left is not None:
+            current_node = current_node.left
+        return current_node
+
     value = deleted_tree_cell.value
 
     min_node = find_min_node(deleted_tree_cell.right)
@@ -231,21 +220,19 @@ def get_lower_bound(tree: TreeMap[V], key: int) -> int:
 
 
 def get_higher_bound(tree: TreeMap[V], key: int) -> int:
-    output = get_maximum(tree)
+    highers = []
 
-    def recursion(current_node: TreeNode[V], key: int):
-        nonlocal output
-
+    def recursion(current_node: TreeNode[V], key: int, highers: list):
         if key < current_node.key and current_node.left is not None:
-            recursion(current_node.left, key)
+            recursion(current_node.left, key, highers)
         elif key > current_node.key and current_node.right is not None:
-            recursion(current_node.right, key)
+            recursion(current_node.right, key, highers)
 
         if current_node.key > key:
-            output = min(current_node.key, output)
+            highers.append(current_node.key)
 
-    recursion(tree.root, key)
-    return output
+    recursion(tree.root, key, highers)
+    return min(highers)
 
 
 def get_maximum(tree: TreeMap[V]) -> int:
@@ -282,10 +269,8 @@ def left_small_rotate(tree_node: TreeNode[V]) -> TreeNode[V]:
 
     tree_node = right_child
 
-    if tree_node.left is not None:
-        fix_height(tree_node.left)
-    if tree_node.right is not None:
-        fix_height(tree_node.right)
+    fix_height(tree_node.left)
+    fix_height(tree_node.right)
     fix_height(tree_node)
     return tree_node
 
@@ -298,10 +283,8 @@ def right_small_rotate(tree_node: TreeNode[V]) -> TreeNode[V]:
 
     tree_node = left_child
 
-    if tree_node.left is not None:
-        fix_height(tree_node.left)
-    if tree_node.right is not None:
-        fix_height(tree_node.right)
+    fix_height(tree_node.left)
+    fix_height(tree_node.right)
     fix_height(tree_node)
     return tree_node
 
