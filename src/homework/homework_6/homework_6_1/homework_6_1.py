@@ -1,5 +1,16 @@
 from src.homework.homework_6.avl_tree import *
+import argparse
 import os
+
+
+def parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file_name")
+    parser.add_argument("-l", "--logs", default="shop_logs.txt")
+    parser.add_argument("-o", "--output", default="output_logs.txt")
+    parser.add_argument("-r", "--remains", default="storage_remains.txt")
+
+    return parser.parse_args()
 
 
 def add(storage: TreeMap, size: int, count: int):
@@ -18,7 +29,7 @@ def get_size(storage: TreeMap, size: int) -> int:
 
 
 def select(storage: TreeMap, size: int):
-    if storage.size == 0:
+    if storage.root is None:
         return "SORRY"
 
     key = get_lower_bound(storage, size)
@@ -58,15 +69,15 @@ def write_result_command(storage, instruction, file):
         file.write(str(chosen_size) + "\n")
 
 
-def write_result(storage, file_path):
-    with open(file_path, "r") as input, open("output_logs.txt", "w+") as output:
+def write_result(storage, file_path, output):
+    with open(file_path, "r") as input, open(output, "w+") as output:
         input.readline()
         for line in input:
             instruction = line.rstrip("\n").split(" ")
             write_result_command(storage, instruction, output)
 
 
-def write_storage(storage):
+def write_storage(storage, output_file):
     def recursion(storage_cell: TreeNode, file):
         size = str(storage_cell.key)
         count = str(storage_cell.value)
@@ -79,15 +90,18 @@ def write_storage(storage):
         if storage_cell.right is not None:
             recursion(storage_cell.right, file)
 
-    with open("storage_remains.txt", "w+") as file:
+    with open(output_file, "w+") as file:
         recursion(storage.root, file)
 
 
 def main():
-    file_path = find_log("shop_logs.txt", "/")
+    args = parse()
+
+    input_file = find_log(args.logs, "/")
+
     storage = create_tree_map()
-    write_result(storage, file_path)
-    write_storage(storage)
+    write_result(storage, input_file, args.output)
+    write_storage(storage, args.remains)
 
 
 if __name__ == "__main__":

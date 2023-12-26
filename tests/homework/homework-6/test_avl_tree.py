@@ -1,37 +1,14 @@
+import random
+
 import pytest
 from src.homework.homework_6.avl_tree import *
 
 
-def create_test_tree(keys: list[int]) -> TreeMap:
+def create_test_tree(keys: list[int], to_balance=True) -> TreeMap:
     tree = create_tree_map()
     for key in keys:
-        put(tree, key, key)
+        put(tree, key, key, to_balance=to_balance)
     return tree
-
-
-def dummy_put(tree: TreeMap[V], key: int, value: V) -> None:
-    new_node = TreeNode(height=1, key=key, value=value, left=None, right=None)
-
-    def recursion(parent: TreeNode[V] | None, tree_cell: TreeNode[V]):
-        if key < tree_cell.key:
-            if tree_cell.left is None:
-                tree_cell.left = new_node
-            else:
-                recursion(tree_cell, tree_cell.left)
-        elif key > tree_cell.key:
-            if tree_cell.right is None:
-                tree_cell.right = new_node
-            else:
-                recursion(tree_cell, tree_cell.right)
-        else:
-            tree_cell.value = value
-
-    if is_tree_map_empty(tree):
-        tree.root = new_node
-    else:
-        root = tree.root
-        recursion(None, root)
-    tree.size += 1
 
 
 def create_balance_test_tree(keys):
@@ -46,22 +23,25 @@ def test_is_tree_empty(keys, expected):
 
 
 @pytest.mark.parametrize(
-    "keys, key, value, expected",
-    [
-        (
-            [10, 4],
-            1,
-            1,
-            [4, 1, 10],
-        ),
-        ([10, 15], 11, 11, [11, 10, 15]),
-        ([10, 15, 11], 11, 58, [58, 10, 15]),
-    ],
+    "size",
+    [(100), (50), (20)],
 )
-def test_put(keys, key, value, expected):
-    tree = create_test_tree(keys)
-    put(tree, key, value)
-    assert traverse(tree, "preorder") == expected
+def test_put(size):
+    tree = create_tree_map()
+
+    def check(tree_node):
+        assert -2 < balance_factor(tree_node) < 2
+        if tree_node.left is not None:
+            check(tree_node.left)
+            assert tree_node.left.key < tree_node.key
+        if tree_node.right is not None:
+            check(tree_node.right)
+            assert tree_node.right.key > tree_node.key
+
+    for i in range(size):
+        key_value = random.randint(0, 10000)
+        put(tree, key_value, key_value)
+        check(tree.root)
 
 
 @pytest.mark.parametrize(
@@ -94,7 +74,7 @@ def test_remove(keys, key, expected):
 def test_get_tree_node(keys, key, expected):
     input_tree = create_test_tree(keys)
     node = get_tree_node(input_tree, key)
-    output_tree = TreeMap(size=1, root=node)
+    output_tree = TreeMap(root=node)
     assert traverse(output_tree, "inorder") == expected
 
 
@@ -187,10 +167,10 @@ def test_get_lower_bound(keys, key, expected):
         ([40, 25, 10, 3, 17, 32, 30, 38, 78, 50, 93], 15, 17),
     ],
 )
-def test_get_higher_bound(keys, key, expected):
+def test_get_upper_bound(keys, key, expected):
     tree = create_test_tree(keys)
 
-    assert get_higher_bound(tree, key) == expected
+    assert get_upper_bound(tree, key) == expected
 
 
 @pytest.mark.parametrize(
@@ -223,15 +203,24 @@ def test_get_minimum(keys, expected):
 
 @pytest.mark.parametrize(
     "keys, expected",
+    [([5, 3, 1, 4], [3, 1, 5, 4]), ([10, 5, 6, 1, 2], [5, 1, 2, 10, 6])],
+)
+def test_right_rotate(keys, expected):
+    tree = create_test_tree(keys, to_balance=False)
+    tree.root = right_small_rotate(tree.root)
+
+    assert traverse(tree, "preorder") == expected
+
+
+@pytest.mark.parametrize(
+    "keys, expected",
     [
-        ([1, 6, 3], [3, 1, 6]),
-        ([6, 3, 1], [3, 1, 6]),
-        ([7, 10, 9], [9, 7, 10]),
-        ([10, 4, 1], [4, 1, 10]),
+        ([7, 2, 10, 20, 15], [10, 7, 2, 20, 15]),
+        ([50, 100, 75, 120], [100, 50, 75, 120]),
     ],
 )
-def test_balance(keys, expected):
-    tree = create_test_tree(keys)
-    tree.root = balance(tree.root)
+def test_left_rotate(keys, expected):
+    tree = create_test_tree(keys, to_balance=False)
+    tree.root = left_small_rotate(tree.root)
 
     assert traverse(tree, "preorder") == expected

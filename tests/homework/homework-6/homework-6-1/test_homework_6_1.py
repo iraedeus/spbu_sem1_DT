@@ -9,11 +9,12 @@ def create_test_storage(sizes: list) -> TreeMap:
     return storage
 
 
-@pytest.mark.parametrize("size, expected", [(5, 1), (6, 2)])
-def test_add(size, expected):
+@pytest.mark.parametrize("size, count, expected", [(5, 2, 3), (6, 1, 1)])
+def test_add(size, count, expected):
     storage = create_tree_map()
-    put(storage, 6, 1)
-    add(storage, size, 1)
+    put(storage, 5, 1)
+
+    add(storage, size, count)
 
     assert get_value(storage, size) == expected
 
