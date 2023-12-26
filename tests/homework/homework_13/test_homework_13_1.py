@@ -8,14 +8,14 @@ import builtins
 @pytest.mark.parametrize(
     "input_user, expected",
     [
-        (["abb", "Exit"], "Your string is word of a regular expression: (a|b)+abb\n"),
+        (["abb", "Exit"], "Your string matches the language: (a|b)+abb\n"),
         (
             ["ababa", "Exit"],
             "",
         ),
         (
             ["45.45", "Exit"],
-            "Your string is word of a regular expression: digit+(.digit+)?(E(+|-)?digit+)?\n",
+            "Your string matches the language: digit+(.digit+)?(E(+|-)?digit+)?\n",
         ),
         (
             ["45E", "Exit"],
