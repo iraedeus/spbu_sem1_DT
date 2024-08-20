@@ -1,5 +1,5 @@
 import pytest
-from src.test.test_2.task_1 import *
+from src.test.test_2.fibb import *
 from io import StringIO
 
 

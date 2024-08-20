@@ -1,6 +1,6 @@
 import pytest
 from io import StringIO
-from src.test.test_2.task_2 import *
+from src.test.test_2.safe_call import *
 
 
 @safe_call
@@ -32,21 +32,21 @@ def dummy_exception_func():
             "wa",
             "An exception type TypeError was occurred: unsupported operand type(s) for /: 'str' and 'int'\n"
             "Function: dummy_unwrapped_fail_func\n"
-            "File: test_task_2.py\n"
+            "File: test_safe_call.py\n"
             "line_8: print(value / 0)\n",
         ),
         (
             "45",
             "An exception type TypeError was occurred: unsupported operand type(s) for /: 'str' and 'int'\n"
             "Function: dummy_unwrapped_fail_func\n"
-            "File: test_task_2.py\n"
+            "File: test_safe_call.py\n"
             "line_8: print(value / 0)\n",
         ),
         (
             6,
             "An exception type ZeroDivisionError was occurred: division by zero\n"
             "Function: dummy_unwrapped_fail_func\n"
-            "File: test_task_2.py\n"
+            "File: test_safe_call.py\n"
             "line_8: print(value / 0)\n",
         ),
     ],
@@ -66,7 +66,7 @@ def test_unwrapped_fail_deco(value, expected, monkeypatch):
             "abc",
             'An exception type TypeError was occurred: can only concatenate str (not "int") to str\n'
             "Function: inner\n"
-            "File: test_task_2.py\n"
+            "File: test_safe_call.py\n"
             "line_14: return value + 90\n",
         ),
     ],
@@ -94,7 +94,7 @@ def test_get_info():
     except ValueError:
         assert get_info() == (
             "dummy_exception_func",
-            "test_task_2.py",
+            "test_safe_call.py",
             25,
             'raise ValueError("Testing")',
         )

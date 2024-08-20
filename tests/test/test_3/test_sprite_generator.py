@@ -1,5 +1,5 @@
 import pytest
-from src.test.test_3.task_1 import *
+from src.test.test_3.sprite_generator import *
 from io import StringIO
 
 
